@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
+
 
 public class TurtleOpMode extends OpMode {
 
@@ -17,7 +19,7 @@ public class TurtleOpMode extends OpMode {
     @Override
     public void loop() {
 
-        drive.pinpoint.update();
+        drive.updateOdometry();
 
     }
 
