@@ -4,19 +4,18 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
 @TeleOp
 @Config
-public class BasicTeleOp extends OpMode {
+public class SystemsCheck extends OpMode {
 
     DcMotor frontLeft, frontRight, rearLeft, rearRight, shootMotor;
     CRServo leftUnicorn, rightUnicorn;
@@ -32,32 +31,33 @@ public class BasicTeleOp extends OpMode {
     public void loop() {
         pinpoint.update();
         telemetry.addLine("Current Pose: " + pinpoint.getPosition());
-        fieldCentricDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
-        if (gamepad1.a) {
-            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, pinpoint.getPosX(DistanceUnit.INCH), pinpoint.getPosY(DistanceUnit.INCH), AngleUnit.DEGREES, 0));
-        }
+        //Drive Wheel Check
+        telemetry.addLine("A Button = Rear Left");
+        telemetry.addLine("X Button = Front Left");
+        telemetry.addLine("B Button = Rear Right");
+        telemetry.addLine("Y Button = Front Right");
+        if (gamepad1.a) rearLeft.setPower(0.5);
+        else rearLeft.setPower(0);
+        if (gamepad1.x) frontLeft.setPower(0.5);
+        else frontLeft.setPower(0);
+        if (gamepad1.b) rearRight.setPower(0.5);
+        else rearRight.setPower(0);
+        if (gamepad1.y) frontRight.setPower(0.5);
+        else frontRight.setPower(0);
 
-        if (gamepad2.a) {
-            shootMotor.setPower(shootpower);
-        }
-
-        if (gamepad2.y) {
-            shootMotor.setPower(0);
-        }
-
-        if (gamepad2.b) {
-            leftUnicorn.setPower(1);
-            rightUnicorn.setPower(1);
-        } else if (gamepad2.x) {
-            leftUnicorn.setPower(-1);
-            rightUnicorn.setPower(-1);
-        } else {
-            leftUnicorn.setPower(0);
-            rightUnicorn.setPower(0);
-        }
-
-
+        //Subsystem Check
+        telemetry.addLine("Dpad Up = Shooter");
+        telemetry.addLine("Dpad Left = Left Unicorn");
+        telemetry.addLine("Dpad Right = Right Unicorn");
+        telemetry.addLine("Dpad Down = Reset Pinpoint");
+        if (gamepad1.dpad_up) shootMotor.setPower(0.5);
+        else shootMotor.setPower(0);
+        if (gamepad1.dpad_left) leftUnicorn.setPower(0.5);
+        else leftUnicorn.setPower(0);
+        if (gamepad1.dpad_right) rightUnicorn.setPower(0.5);
+        else rightUnicorn.setPower(0);
+        if (gamepad1.dpad_down) pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
     }
 
     public void setUpConfig() {

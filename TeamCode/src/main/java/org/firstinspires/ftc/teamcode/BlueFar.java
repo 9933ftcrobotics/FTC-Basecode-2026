@@ -1,61 +1,56 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.acmerobotics.dashboard.config.Config;
+import static android.os.SystemClock.sleep;
+
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp
-@Config
-public class BasicTeleOp extends OpMode {
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
-    DcMotor frontLeft, frontRight, rearLeft, rearRight, shootMotor;
+@Autonomous
+public class BlueFar extends OpMode {
+
+    DcMotorEx frontLeft, frontRight, rearLeft, rearRight, shootMotor;
     CRServo leftUnicorn, rightUnicorn;
     GoBildaPinpointDriver pinpoint;
-    public static double shootpower = .6;
+    int step = 0;
 
     @Override
     public void init() {
         setUpConfig();
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 60, -12, AngleUnit.DEGREES, 180));
     }
 
     @Override
     public void loop() {
+
         pinpoint.update();
-        telemetry.addLine("Current Pose: " + pinpoint.getPosition());
-        fieldCentricDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        telemetry.addLine("Step: " + step);
+        telemetry.addLine("CurrentPose: \n\tX: " + pinpoint.getPosition().getX(DistanceUnit.INCH) + "\n\tY: "  + pinpoint.getPosition().getY(DistanceUnit.INCH)+ "\n\tA: "  + pinpoint.getPosition().getHeading(AngleUnit.DEGREES));
 
-        if (gamepad1.a) {
-            pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, pinpoint.getPosX(DistanceUnit.INCH), pinpoint.getPosY(DistanceUnit.INCH), AngleUnit.DEGREES, 0));
+        switch (step) {
+
+            case -1:
+                shoot();
+                step = 10;
+                break;
+
+            case 0:
+                if (driveToPose(40, -20, -90)) {
+                    step = 20;
+                }
+                break;
+
+
         }
 
-        if (gamepad2.a) {
-            shootMotor.setPower(shootpower);
-        }
-
-        if (gamepad2.y) {
-            shootMotor.setPower(0);
-        }
-
-        if (gamepad2.b) {
-            leftUnicorn.setPower(1);
-            rightUnicorn.setPower(1);
-        } else if (gamepad2.x) {
-            leftUnicorn.setPower(-1);
-            rightUnicorn.setPower(-1);
-        } else {
-            leftUnicorn.setPower(0);
-            rightUnicorn.setPower(0);
-        }
 
 
     }
@@ -102,6 +97,57 @@ public class BasicTeleOp extends OpMode {
 
     }
 
+    private boolean driveToPose (double x, double y, double a) {
+        Pose2D targetPose = new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, a), currentPose = pinpoint.getPosition();
+
+        //Figure out the distance away from end pose
+        double distanceAwayX = targetPose.getX(DistanceUnit.INCH) - currentPose.getX(DistanceUnit.INCH);
+        double distanceAwayY = targetPose.getY(DistanceUnit.INCH) - currentPose.getY(DistanceUnit.INCH);
+        double distanceAway = Math.sqrt(Math.pow(distanceAwayX, 2) + Math.pow(distanceAwayY, 2));
+        double angleOfDistance = Math.atan2(distanceAwayY, distanceAwayX);
+
+        //Make sure it drives in a straight line
+        double translationOutput = pidCalculate(0.15, 0, 0.05, distanceAway, 0);
+        translationOutput = Math.copySign(Math.min(Math.abs(translationOutput), 1), distanceAway);
+
+        //Set New Rotation so it can cross -180
+        double targetAngle = targetPose.getHeading(AngleUnit.DEGREES), currentAngle = currentPose.getHeading(AngleUnit.DEGREES);
+        if (Math.abs(targetAngle - currentAngle) > 180) {
+            double delta = (180 - Math.abs(targetAngle));
+
+            if (currentAngle >= 0) {
+                targetAngle = 180 + delta;
+            } else {
+                targetAngle = -180 - delta;
+            }
+        }
+
+        //Power needed in each direction
+        double rotPow = -pidCalculate(.05, 0, 0, currentAngle, targetAngle);
+        double xPow = translationOutput * Math.cos(angleOfDistance);
+        double yPow = -translationOutput * Math.sin(angleOfDistance);
+
+        telemetry.addLine("Distance Away : " + distanceAway);
+        telemetry.addLine("Angle: " + angleOfDistance * 180 / Math.PI);
+
+        //Apply power
+        fieldCentricDrive(xPow, yPow, rotPow);
+
+        if (distanceAway < 1 && Math.abs(currentAngle - targetAngle) < 5) {
+            fieldCentricDrive(0, 0, 0);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private double pidCalculate(double p, double i, double d, double currentPoint, double setpoint) {
+        double error = setpoint - currentPoint;
+        double power = error * p;
+
+        return power;
+    }
+
     // This routine drives the robot field relative
     private void fieldCentricDrive(double forward, double right, double rotate) {
         // First, convert direction being asked to drive to polar coordinates
@@ -120,7 +166,7 @@ public class BasicTeleOp extends OpMode {
         robotCentricDrive(newForward, newRight, rotate);
     }
 
-    public void robotCentricDrive(double forward, double right, double rotate) {
+    private void robotCentricDrive(double forward, double right, double rotate) {
         // This calculates the power needed for each wheel based on the amount of forward,
         // strafe right, and rotate
         double frontLeftPower = forward + right + rotate;
@@ -146,5 +192,30 @@ public class BasicTeleOp extends OpMode {
         frontRight.setPower(maxSpeed * (frontRightPower / maxPower));
         rearLeft.setPower(maxSpeed * (backLeftPower / maxPower));
         rearRight.setPower(maxSpeed * (backRightPower / maxPower));
+    }
+
+
+    private void shoot () {
+
+        shootMotor.setPower(0.6);
+        sleep(5000);
+        leftUnicorn.setPower(1);
+        rightUnicorn.setPower(1);
+        sleep(500);
+        leftUnicorn.setPower(-0.2);
+        rightUnicorn.setPower(0.2);
+        sleep(2000);
+        leftUnicorn.setPower(1);
+        rightUnicorn.setPower(1);
+        sleep(500);
+        leftUnicorn.setPower(-0.2);
+        rightUnicorn.setPower(0.2);
+        sleep(2000);
+        leftUnicorn.setPower(1);
+        rightUnicorn.setPower(1);
+        sleep(2000);
+        leftUnicorn.setPower(0);
+        rightUnicorn.setPower(0);
+        shootMotor.setPower(0);
     }
 }
