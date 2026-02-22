@@ -14,38 +14,38 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 public class DriveSubsystem {
     Telemetry telemetry;
     GoBildaPinpointDriver pinpoint;
-    DcMotorEx frontLeft, frontRight, rearLeft, rearRight;
+    DcMotorEx leftFront, rightFront, leftRear, rightRear;
     boolean isRobotAtTarget = false;
 
     /**
-     * Assumes Drive Motors are configured as frontLeft, frontRight, rearLeft, and rearRight
+     * Assumes Drive Motors are configured as leftFront, rightFront, leftRear, and rightRear
      * </p>
      * Assumes Pinpoint is configured as pinpoint
      */
     public DriveSubsystem(Telemetry telemetry, HardwareMap hardwareMap) {
         this.telemetry = telemetry;
 
-        frontLeft = hardwareMap.get(DcMotorEx.class, "frontLeft");
-        frontRight = hardwareMap.get(DcMotorEx.class, "frontRight");
-        rearLeft = hardwareMap.get(DcMotorEx.class, "rearLeft");
-        rearRight = hardwareMap.get(DcMotorEx.class, "rearRight");
+        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
+        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
+        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
 
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rearLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rearRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        frontLeft.setDirection(DcMotorSimple.Direction.FORWARD);
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        rearRight.setDirection(DcMotorSimple.Direction.FORWARD);
-        rearLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
-        pinpoint.setOffsets(-5.5, -5, DistanceUnit.INCH);
+        pinpoint.setOffsets(6.5, -2.25, DistanceUnit.INCH);
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
-                GoBildaPinpointDriver.EncoderDirection.REVERSED);
+                GoBildaPinpointDriver.EncoderDirection.FORWARD);
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
 
     }
@@ -53,6 +53,8 @@ public class DriveSubsystem {
     public void updateOdometry() {
         pinpoint.update();
     }
+
+
 
     public void seedPose(double x, double y, double degrees) {
         pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, degrees));
@@ -105,6 +107,9 @@ public class DriveSubsystem {
     public boolean isRobotAtTarget() {
         return isRobotAtTarget;
     }
+    public Pose2D getRobotPose(){
+        return pinpoint.getPosition();
+    }
 
     private double pidCalculate(double p, double i, double d, double currentPoint, double setpoint) {
         double error = setpoint - currentPoint;
@@ -153,9 +158,9 @@ public class DriveSubsystem {
         // We multiply by maxSpeed so that it can be set lower for outreaches
         // When a young child is driving the robot, we may not want to allow full
         // speed.
-        frontLeft.setPower(maxSpeed * (frontLeftPower / maxPower));
-        frontRight.setPower(maxSpeed * (frontRightPower / maxPower));
-        rearLeft.setPower(maxSpeed * (backLeftPower / maxPower));
-        rearRight.setPower(maxSpeed * (backRightPower / maxPower));
+        leftFront.setPower(maxSpeed * (frontLeftPower / maxPower));
+        rightFront.setPower(maxSpeed * (frontRightPower / maxPower));
+        leftRear.setPower(maxSpeed * (backLeftPower / maxPower));
+        rightRear.setPower(maxSpeed * (backRightPower / maxPower));
     }
 }

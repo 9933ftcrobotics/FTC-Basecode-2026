@@ -21,24 +21,29 @@ public class BlueClose extends TurtleOpMode {
 
     @Override
     public void init() {
-       drive.seedPose( -60, -38, 46);
+
+        super.init();
+        drive.seedPose( 0, 0, 0);
     }
 
     @Override
     public void loop() {
-
+        super.loop();
         telemetry.addLine("Step: " + step);
 
         switch (step) {
 
 
             case 0:
-                drive.driveToPose(0, 0, 0);
+                intake.start();
+                drive.driveToPose(12, 12, 90);
                 if (drive.isRobotAtTarget()) {
                     step = 10;
                 }
                 break;
-
+            case 10:
+                intake.stop();
+                break;
 
         }
 
