@@ -1,18 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
-import static android.os.SystemClock.sleep;
 
-import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @Autonomous
 public class BlueClose extends TurtleOpMode {
@@ -23,7 +12,7 @@ public class BlueClose extends TurtleOpMode {
     public void init() {
 
         super.init();
-        drive.seedPose( 0, 0, 0);
+        //drive.seedPose(0,0,0);  <- Null Pointer Exception?
     }
 
     @Override
@@ -35,13 +24,19 @@ public class BlueClose extends TurtleOpMode {
 
 
             case 0:
+
+                drive.seedPose(0,0,0);
+                step = 10;
+                break;
+            case 10:
+
                 intake.start();
                 drive.driveToPose(12, 12, 90);
                 if (drive.isRobotAtTarget()) {
-                    step = 10;
+                    step = 20;
                 }
                 break;
-            case 10:
+            case 20:
                 intake.stop();
                 break;
 
