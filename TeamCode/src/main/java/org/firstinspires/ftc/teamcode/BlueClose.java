@@ -31,14 +31,31 @@ public class BlueClose extends TurtleOpMode {
             case 10:
 
                 intake.start();
-                drive.driveToPose(12, 12, 90);
+                drive.driveToPose(12, 0, 0);
                 if (drive.isRobotAtTarget()) {
                     step = 20;
                 }
                 break;
             case 20:
+                drive.driveToPose(12, 12, 0);
+                if (drive.isRobotAtTarget()) {
+                    step = 30;
+                }
+                break;
+            case 30:
+                drive.driveToPose(0,12,0);
+                if (drive.isRobotAtTarget()) {
+                    step = 40;
+                }
                 intake.stop();
                 break;
+            case 40:
+                drive.driveToPose(0,0,0);
+                if (drive.isRobotAtTarget()) {
+                    step = 50;
+                }
+                break;
+                }
 
         }
 
@@ -46,4 +63,4 @@ public class BlueClose extends TurtleOpMode {
 
     }
 
-}
+
