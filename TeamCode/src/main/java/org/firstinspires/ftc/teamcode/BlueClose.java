@@ -55,12 +55,10 @@ public class BlueClose extends TurtleOpMode {
                     step = 50;
                 }
                 break;
-                }
-
         }
 
-
-
     }
+
+}
 
 
