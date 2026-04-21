@@ -10,7 +10,7 @@ public class BlueClose extends TurtleOpMode {
 
     @Override
     public void init() {
-
+        auto = true;
         super.init();
         //drive.seedPose(0,0,0);  <- Null Pointer Exception?
     }
@@ -24,33 +24,32 @@ public class BlueClose extends TurtleOpMode {
 
 
             case 0:
-
                 drive.seedPose(0,0,0);
                 step = 10;
                 break;
             case 10:
 
                 intake.start();
-                drive.driveToPose(12, 0, 0);
+                setTargetPose(12, 0, 0);
                 if (drive.isRobotAtTarget()) {
                     step = 20;
                 }
                 break;
             case 20:
-                drive.driveToPose(12, 12, 0);
+                setTargetPose(12, 12, 0);
                 if (drive.isRobotAtTarget()) {
                     step = 30;
                 }
                 break;
             case 30:
-                drive.driveToPose(0,12,0);
+                setTargetPose(0, 12, 0);
                 if (drive.isRobotAtTarget()) {
                     step = 40;
                 }
                 intake.stop();
                 break;
             case 40:
-                drive.driveToPose(0,0,0);
+                setTargetPose(0, 0, 0);
                 if (drive.isRobotAtTarget()) {
                     step = 50;
                 }

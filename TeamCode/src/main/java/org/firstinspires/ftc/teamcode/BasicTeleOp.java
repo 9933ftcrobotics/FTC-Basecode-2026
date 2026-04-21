@@ -8,6 +8,7 @@ public class BasicTeleOp extends TurtleOpMode {
 
     @Override
     public void init() {
+        auto = false;
         super.init();
     }
 

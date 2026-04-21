@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.TurtleOpMode;
 
 public class DriveSubsystem {
     Telemetry telemetry;
@@ -70,8 +71,8 @@ public class DriveSubsystem {
         double angleOfDistance = Math.atan2(distanceAwayY, distanceAwayX);
 
         //Make sure it drives in a straight line
-        double translationOutput = pidCalculate(0.15, 0, 0.05, distanceAway, 0);
-        translationOutput = Math.copySign(Math.min(Math.abs(translationOutput), 1), distanceAway);
+        double translationOutput = pidCalculate(TurtleOpMode.p, TurtleOpMode.i, TurtleOpMode.d, distanceAway, 0);
+        translationOutput = Math.copySign(Math.min(Math.abs(translationOutput), TurtleOpMode.maxSpeed), distanceAway); // Math.copySign(Math.min(Math.abs(translationOutput), 1), distanceAway);
 
         //Set New Rotation so it can cross -180
         double targetAngle = targetPose.getHeading(AngleUnit.DEGREES), currentAngle = currentPose.getHeading(AngleUnit.DEGREES);
