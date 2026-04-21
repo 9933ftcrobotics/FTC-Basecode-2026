@@ -12,9 +12,8 @@ public class ShooterSubSystem {
     Telemetry telemetry;
     DcMotorEx shooterMotor;
     Servo loading;
-    double step;
 
-    public ShooterSubSystem(Telemetry telemetry, HardwareMap hardwareMap){
+    public ShooterSubSystem(Telemetry telemetry, HardwareMap hardwareMap) {
         this.telemetry = telemetry;
 
         shooterMotor = hardwareMap.get(DcMotorEx.class, "shooter");
@@ -22,55 +21,15 @@ public class ShooterSubSystem {
     }
 
 
-    public void setShooterSpeed (double speed) {
+    public void setShooterSpeed(double speed) {
 
-      shooterMotor.setPower(speed);
+        shooterMotor.setPower(speed);
     }
-    public void setLoading (double position) {
+
+    public void setLoading(double position) {
 
         loading.setPosition(position);
     }
-    public boolean shootTres () {
 
-    //before running make sure the robot is positioned
-    // and the delivery + intake are running
-        switch (step) {
-
-            case 20:
-                setShooterSpeed(.9);
-                sleep(3000);
-                step = 30;
-                break;
-            case 30:
-                setLoading(.25);
-                sleep(1200);
-                step = 40;
-                break;
-            case 40:
-                setLoading(0.075);
-                sleep(1200);
-                step = 50;
-                break;
-            case 50:
-                setLoading(.25);
-                sleep(1200);
-                step = 60;
-                break;
-            case 60:
-                setLoading(0.075);
-                sleep(1200);
-                step = 70;
-                break;
-            case 70:
-                setLoading(.25);
-                sleep(1200);
-                step = 80;
-                break;
-            case 80:
-                setLoading(0.075);
-                sleep(1200);
-                return true;
-                break;
-        }
 
 }
