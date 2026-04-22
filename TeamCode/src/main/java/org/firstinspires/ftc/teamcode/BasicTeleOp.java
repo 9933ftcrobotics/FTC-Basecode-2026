@@ -21,6 +21,12 @@ public class BasicTeleOp extends TurtleOpMode {
         else{
             intake.stop();
         }
+        if(gamepad1.right_trigger>.25) {
+            shooter.spinUp(2000);
+        }
+        else{
+            shooter.stop();
+        }
         if(gamepad1.start){
             drive.seedPose(0,0,0);
         }
