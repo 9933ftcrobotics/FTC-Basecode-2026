@@ -22,8 +22,11 @@ public class BasicTeleOp extends TurtleOpMode {
             intake.stop();
         }
         if(gamepad1.start){
-            drive.seedPose(0,0,0);
+            odometry.seedPose(0,0,0);
         }
 
     }
+
+    @Override
+    public void stop() {super.stop();}
 }
