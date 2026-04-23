@@ -40,47 +40,42 @@ public class TurtleOpMode extends OpMode {
         if (tresStep == 10) {
             intake.start();
             tresStep = 20;
-        }
-        if (tresStep == 20) {
+        } else if (tresStep == 20) {
             shooter.setShooterSpeed(.9);
             sleep(3000);
             tresStep = 30;
-        }
-        if (tresStep == 30) {
+        } else if (tresStep == 30) {
             shooter.setLoading(.25);
             sleep(1200);
             tresStep = 40;
-        }
-        if (tresStep == 40) {
+        } else if (tresStep == 40) {
             shooter.setLoading(0.075);
             sleep(1200);
             tresStep = 50;
-        }
-        if (tresStep == 50) {
+        } else if (tresStep == 50) {
             shooter.setLoading(.25);
             sleep(1200);
             tresStep = 60;
-        }
-        if (tresStep == 60) {
+        } else if (tresStep == 60) {
             shooter.setLoading(0.075);
             sleep(1200);
             tresStep = 70;
-        }
-        if (tresStep == 70) {
+        } else if (tresStep == 70) {
             shooter.setLoading(.25);
             sleep(1200);
             tresStep = 80;
-        }
-        if (tresStep == 80) {
+        } else if (tresStep == 80) {
             shooter.setLoading(0.075);
             sleep(1200);
             tresStep = 90;
-        }
-        if (tresStep == 90) {
+        } else if (tresStep == 90) {
             shooter.setShooterSpeed(0);
             intake.stop();
             delivery.setDeliverySpeed(0);
             tresStep = 10000000;
+        } else {
+            tresStep = 10;
+            return true;
         }
 
         return false;

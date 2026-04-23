@@ -21,46 +21,46 @@ public class AutoName extends TurtleOpMode {
     public void loop() {
         super.loop();
         telemetry.addLine("Step: " + step);
-        if (tresStep == 0) {
+        if (step == 0) {
             drive.seedPose(0, 0, 0);
-            tresStep = 10;
+            step = 10;
         }
-        else if (tresStep == 10) {
+        else if (step == 10) {
             drive.driveToPose(66, 7, -34);
             if (drive.isRobotAtTarget()) {
-                tresStep = 20;
+                step = 20;
             }
         }
-        else if (tresStep == 20) {
+        else if (step == 20) {
             shootTres();
             literallyAnything = shootTres();
             if (literallyAnything) {
-                tresStep = 30;
+                step = 30;
             }
         }
-        else if (tresStep == 30) {
+        else if (step == 30) {
             drive.driveToPose(80,23,0);
             if (drive.isRobotAtTarget()) {
-            tresStep = 40;}
+                step = 40;}
         }
-        else if (tresStep == 40) {
+        else if (step == 40) {
             intake.start();
             sleep(1000);
-            tresStep = 50;
+            step = 50;
         }
-        else if (tresStep == 50) {
+        else if (step == 50) {
             drive.driveToPose(109,19,0);
             if (drive.isRobotAtTarget()) {
-            tresStep = 60;}
+                step = 60;}
         }
-        else if (tresStep == 60) {
+        else if (step == 60) {
             drive.driveToPose(70, 6, -40);
             if (drive.isRobotAtTarget()) {
-            tresStep = 70;}
+                step = 70;}
         }
-        else if (tresStep == 70) {
+        else if (step == 70) {
             shootTres();
-            tresStep = 80;
+            step = 80;
         }
 
         }
