@@ -41,12 +41,15 @@ public class AutoName extends TurtleOpMode {
         else if (step == 30) {
             drive.driveToPose(80,23,0);
             if (drive.isRobotAtTarget()) {
-                step = 40;}
+                timer.reset();
+                step = 40;
+            }
         }
         else if (step == 40) {
             intake.start();
-            sleep(1000);
-            step = 50;
+            if (timer.seconds() >= 1) {
+                step = 50;
+            }
         }
         else if (step == 50) {
             drive.driveToPose(109,19,0);
