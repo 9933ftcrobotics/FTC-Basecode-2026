@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import static android.os.SystemClock.sleep;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -19,6 +20,9 @@ public class TurtleOpMode extends OpMode {
     ShooterSubSystem shooter;
     DeliverySubSystem delivery;
     int tresStep = 10;
+
+    ElapsedTime timer = new ElapsedTime();
+
     @Override
     public void init() {
 
@@ -39,35 +43,50 @@ public class TurtleOpMode extends OpMode {
         delivery.setDeliverySpeed(1);
         if (tresStep == 10) {
             intake.start();
+            timer.reset();
             tresStep = 20;
         } else if (tresStep == 20) {
             shooter.setShooterSpeed(.9);
-            sleep(3000);
-            tresStep = 30;
+            if (timer.seconds() >= 3) {
+                timer.reset();
+                tresStep = 30;
+            }
         } else if (tresStep == 30) {
             shooter.setLoading(.25);
-            sleep(1200);
-            tresStep = 40;
+            if (timer.seconds() >= 1) {
+                timer.reset();
+                tresStep = 40;
+            }
         } else if (tresStep == 40) {
             shooter.setLoading(0.075);
-            sleep(1200);
-            tresStep = 50;
+            if (timer.seconds() >= 1) {
+                timer.reset();
+                tresStep = 50;
+            }
         } else if (tresStep == 50) {
             shooter.setLoading(.25);
-            sleep(1200);
-            tresStep = 60;
+            if (timer.seconds() >= 1) {
+                timer.reset();
+                tresStep = 60;
+            }
         } else if (tresStep == 60) {
             shooter.setLoading(0.075);
-            sleep(1200);
-            tresStep = 70;
+            if (timer.seconds() >= 1) {
+                timer.reset();
+                tresStep = 70;
+            }
         } else if (tresStep == 70) {
             shooter.setLoading(.25);
-            sleep(1200);
-            tresStep = 80;
+            if (timer.seconds() >= 1) {
+                timer.reset();
+                tresStep = 80;
+            }
         } else if (tresStep == 80) {
             shooter.setLoading(0.075);
-            sleep(1200);
-            tresStep = 90;
+            if (timer.seconds() >= 1) {
+                timer.reset();
+                tresStep = 90;
+            }
         } else if (tresStep == 90) {
             shooter.setShooterSpeed(0);
             intake.stop();
