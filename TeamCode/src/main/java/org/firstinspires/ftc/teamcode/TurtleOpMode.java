@@ -32,11 +32,10 @@ public class TurtleOpMode extends OpMode {
     @Override
     public void loop() {
         // Only DriveToPose when in auto
-        if (auto == true) {
+        if (auto) {
             drive.driveToPose(x, y, heading);
-        } else {
-            //Need anything to stop drive to pose?
         }
+        
         drive.updateOdometry();
         telemetry.addLine("Robot Pose:"+ drive.getRobotPose().getX(DistanceUnit.INCH) + "," + drive.getRobotPose().getY(DistanceUnit.INCH) + "," + drive.getRobotPose().getHeading(AngleUnit.DEGREES));
 
