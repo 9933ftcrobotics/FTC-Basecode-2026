@@ -11,12 +11,16 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.TurtleOpMode;
+import org.firstinspires.ftc.teamcode.turtleUtils.PIDController;
 
 public class DriveSubsystem {
     Telemetry telemetry;
     GoBildaPinpointDriver pinpoint;
     DcMotorEx leftFront, rightFront, leftRear, rightRear;
     boolean isRobotAtTarget = false;
+
+    PIDController translationalController = new PIDController(TurtleOpMode.p, TurtleOpMode.i, TurtleOpMode.d);
+    PIDController rotationalController = new PIDController(.05, 0, 0);
 
     /**
      * Assumes Drive Motors are configured as leftFront, rightFront, leftRear, and rightRear
@@ -71,7 +75,7 @@ public class DriveSubsystem {
         double angleOfDistance = Math.atan2(distanceAwayY, distanceAwayX);
 
         //Make sure it drives in a straight line
-        double translationOutput = pidCalculate(TurtleOpMode.p, TurtleOpMode.i, TurtleOpMode.d, distanceAway, 0);
+        double translationOutput = translationalController.calculate(distanceAway, 0);
         translationOutput = Math.copySign(Math.min(Math.abs(translationOutput), TurtleOpMode.maxSpeed), distanceAway); // Math.copySign(Math.min(Math.abs(translationOutput), 1), distanceAway);
 
         //Set New Rotation so it can cross -180
@@ -87,7 +91,7 @@ public class DriveSubsystem {
         }
 
         //Power needed in each direction
-        double rotPow = -pidCalculate(.05, 0, 0, currentAngle, targetAngle);
+        double rotPow = -rotationalController.calculate(currentAngle, targetAngle);
         double xPow = translationOutput * Math.cos(angleOfDistance);
         double yPow = -translationOutput * Math.sin(angleOfDistance);
 

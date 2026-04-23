@@ -7,6 +7,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubSystem;
+import org.firstinspires.ftc.teamcode.turtleUtils.PIDController;
 
 
 @Config
@@ -20,6 +21,7 @@ public class TurtleOpMode extends OpMode {
     double x, y, heading; // Poses for auto
     public static double p = 0.15, i = 0, d = 0.05; // PID for drivetrain
     public static double maxSpeed; // Max speed for auto
+    PIDController pid = new PIDController(0);
 
     @Override
     public void init() {
@@ -35,7 +37,7 @@ public class TurtleOpMode extends OpMode {
         if (auto) {
             drive.driveToPose(x, y, heading);
         }
-        
+
         drive.updateOdometry();
         telemetry.addLine("Robot Pose:"+ drive.getRobotPose().getX(DistanceUnit.INCH) + "," + drive.getRobotPose().getY(DistanceUnit.INCH) + "," + drive.getRobotPose().getHeading(AngleUnit.DEGREES));
 
