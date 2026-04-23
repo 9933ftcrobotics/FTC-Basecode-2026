@@ -21,60 +21,52 @@ public class AutoName extends TurtleOpMode {
     public void loop() {
         super.loop();
         telemetry.addLine("Step: " + step);
+        if (tresStep == 0) {
+            drive.seedPose(0, 0, 0);
+            tresStep = 10;
+        }
+        else if (tresStep == 10) {
+            drive.driveToPose(66, 7, -34);
+            if (drive.isRobotAtTarget()) {
+                tresStep = 20;
+            }
+        }
+        else if (tresStep == 20) {
+            shootTres();
+            literallyAnything = shootTres();
+            if (literallyAnything) {
+                tresStep = 30;
+            }
+        }
+        else if (tresStep == 30) {
+            drive.driveToPose(80,23,0);
+            if (drive.isRobotAtTarget()) {
+            tresStep = 40;}
+        }
+        else if (tresStep == 40) {
+            intake.start();
+            sleep(1000);
+            tresStep = 50;
+        }
+        else if (tresStep == 50) {
+            drive.driveToPose(109,19,0);
+            if (drive.isRobotAtTarget()) {
+            tresStep = 60;}
+        }
+        else if (tresStep == 60) {
+            drive.driveToPose(70, 6, -40);
+            if (drive.isRobotAtTarget()) {
+            tresStep = 70;}
+        }
+        else if (tresStep == 70) {
+            shootTres();
+            tresStep = 80;
+        }
 
-        switch (step) {
-
-
-            case 0:
-                drive.seedPose(0, 0, 0);
-                step = 10;
-                break;
-            case 10:
-                drive.driveToPose(70, 6, -40);
-                if (drive.isRobotAtTarget()) {
-                    step = 30;
-                }
-                break;
-            case 30:
-
-                literallyAnything = shootTres();
-                if (literallyAnything) {
-                    step = 40;
-                }
-                break;
-            case 40:
-                drive.driveToPose(80,23,0);
-                if (drive.isRobotAtTarget()) {
-                    step = 50;
-                }
-                break;
-            case 50:
-                //sleep(4000);
-                intake.start();
-                sleep(1000);
-                step = 60;
-                break;
-            case 60:
-                drive.driveToPose(109,19,0);
-                if (drive.isRobotAtTarget()) {
-                    step = 80;
-                }
-                break;
-            case 70:
-                drive.driveToPose(70, 6, -40);
-                if (drive.isRobotAtTarget()) {
-                    step = 70;
-                }
-                break;
-            case 80:
-                shootTres();
-                break;
-            default:
-                break;
         }
 
     }
 
-}
+
 
 
