@@ -39,7 +39,7 @@ public class OdometrySubsystem {
     }
 
     public Pose2D getRobotPose() {
-        Pose2D visionPose = getMegaTag1Pose();
+        Pose2D visionPose = getCombinedPose();
 
         if (visionPose == null) {
             return getPinpointPose();
