@@ -98,7 +98,6 @@ public class DriveSubsystem {
         fieldCentricDrive(xPow, yPow, rotPow);
 
         if (distanceAway < 1 && Math.abs(currentAngle - targetAngle) < 5) {
-            fieldCentricDrive(0, 0, 0);
             isRobotAtTarget = true;
         } else {
             isRobotAtTarget = false;
