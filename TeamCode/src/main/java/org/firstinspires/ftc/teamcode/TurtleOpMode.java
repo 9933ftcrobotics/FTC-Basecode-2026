@@ -21,7 +21,6 @@ public class TurtleOpMode extends OpMode {
     double x, y, heading; // Poses for auto
     public static double p = 0.15, i = 0, d = 0.05; // PID for drivetrain
     public static double maxSpeed; // Max speed for auto
-    PIDController pid = new PIDController(0);
 
     @Override
     public void init() {
