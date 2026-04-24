@@ -39,20 +39,18 @@ public class OdometrySubsystem {
     }
 
     public Pose2D getRobotPose() {
-        Pose2D visionPose = getCombinedPose();
-
-        if (visionPose == null) {
-            return getPinpointPose();
-        } else {
-            seedPose(visionPose);
-            return visionPose;
-        }
+        return getPinpointPose();
     }
 
     ////////////////////// Pinpoint Methods //////////////////////
 
     public void updateOdometry() {
+        Pose2D visionPose = getCombinedPose();
         pinpoint.update();
+
+        if (visionPose != null) {
+            seedPose(visionPose);
+        }
     }
 
     public void seedPose(double x, double y, double degrees) {
