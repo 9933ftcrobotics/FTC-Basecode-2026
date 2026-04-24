@@ -115,13 +115,6 @@ public class DriveSubsystem {
         return pinpoint.getPosition();
     }
 
-    private double pidCalculate(double p, double i, double d, double currentPoint, double setpoint) {
-        double error = setpoint - currentPoint;
-        double power = error * p;
-
-        return power;
-    }
-
     // This routine drives the robot field relative
     public void fieldCentricDrive(double forward, double right, double rotate) {
         // First, convert direction being asked to drive to polar coordinates
