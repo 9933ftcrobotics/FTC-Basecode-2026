@@ -49,7 +49,7 @@ public class OdometrySubsystem {
         pinpoint.update();
 
         if (visionPose != null) {
-            seedPose(visionPose);
+            seedVisionPose(visionPose);
         }
     }
 
@@ -59,6 +59,17 @@ public class OdometrySubsystem {
 
     public void seedPose(Pose2D newPose) {
         pinpoint.setPosition(newPose);
+    }
+
+    public void seedVisionPose(Pose2D newPose) {
+        Pose2D averagedPose = new Pose2D(
+                DistanceUnit.INCH,
+                (((getRobotPose().getX(DistanceUnit.INCH) * 4) + newPose.getX(DistanceUnit.INCH)) / 5),
+                (((getRobotPose().getY(DistanceUnit.INCH) * 4) + newPose.getY(DistanceUnit.INCH)) / 5),
+                AngleUnit.DEGREES,
+                (((getRobotPose().getHeading(AngleUnit.DEGREES) * 4) + newPose.getHeading(AngleUnit.DEGREES)) / 25)
+                );
+        pinpoint.setPosition(averagedPose);
     }
 
     private Pose2D getPinpointPose() {
@@ -101,6 +112,7 @@ public class OdometrySubsystem {
     }
 
     private Pose2D getCombinedPose() {
+
         Pose2D mt1Pose = getMegaTag1Pose(), mt2Pose = getMegaTag2Pose();
 
         if (mt2Pose == null) {
