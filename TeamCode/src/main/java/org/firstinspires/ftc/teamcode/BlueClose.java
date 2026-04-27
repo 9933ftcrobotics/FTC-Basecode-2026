@@ -25,7 +25,7 @@ public class BlueClose extends TurtleOpMode {
 
             case 0:
 
-                drive.seedPose(0,0,0);
+                odometry.seedPose(0,0,0);
                 step = 10;
                 break;
             case 10:
@@ -58,6 +58,9 @@ public class BlueClose extends TurtleOpMode {
         }
 
     }
+
+    @Override
+    public void stop() {super.stop();}
 
 }
 

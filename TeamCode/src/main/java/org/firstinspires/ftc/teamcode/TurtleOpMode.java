@@ -9,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystems.DeliverySubSystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubSystem;
+import org.firstinspires.ftc.teamcode.subsystems.OdometrySubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterSubSystem;
 
 
@@ -16,14 +17,17 @@ public class TurtleOpMode extends OpMode {
 
     DriveSubsystem drive;
     IntakeSubSystem intake;
+    OdometrySubsystem odometry;
     ShooterSubSystem shooter;
     DeliverySubSystem delivery;
     int tresStep = 10;
+
     @Override
     public void init() {
 
-        drive = new DriveSubsystem(telemetry, hardwareMap);
         intake = new IntakeSubSystem(telemetry,hardwareMap);
+        odometry = new OdometrySubsystem(telemetry,hardwareMap);
+        drive = new DriveSubsystem(telemetry, hardwareMap, odometry);
         shooter = new ShooterSubSystem(telemetry,hardwareMap);
         delivery = new DeliverySubSystem(telemetry,hardwareMap);
     }
@@ -31,8 +35,8 @@ public class TurtleOpMode extends OpMode {
     @Override
     public void loop() {
 
-        drive.updateOdometry();
-        telemetry.addLine("Robot Pose:"+ drive.getRobotPose().getX(DistanceUnit.INCH) + "," + drive.getRobotPose().getY(DistanceUnit.INCH) + "," + drive.getRobotPose().getHeading(AngleUnit.DEGREES));
+        odometry.updateOdometry();
+        telemetry.addLine("Robot Pose:"+ odometry.getRobotPose().getX(DistanceUnit.INCH) + "," + odometry.getRobotPose().getY(DistanceUnit.INCH) + "," + odometry.getRobotPose().getHeading(AngleUnit.DEGREES));
 
     }
     public boolean shootTres() {
@@ -77,7 +81,12 @@ public class TurtleOpMode extends OpMode {
             tresStep = 10;
             return true;
         }
-
         return false;
     }
+
+    @Override
+    public void stop() {
+        odometry.endStream();
+    }
+
 }
