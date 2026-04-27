@@ -22,7 +22,7 @@ public class BasicTeleOp extends TurtleOpMode {
             intake.stop();
         }
         if(gamepad1.start){
-            odometry.seedPose(0,0,0);
+            drive.seedPose(0,0,0);
         }
 
         if (gamepad1.y){
