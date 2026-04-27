@@ -3,7 +3,11 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.rev.Rev9AxisImu;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -11,22 +15,39 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
+import java.util.function.DoubleSupplier;
+
 public class OdometrySubsystem {
 
     Limelight3A limelight;
+    DcMotorEx xPosMotor, yPosMotor;
     Telemetry telemetry;
-    GoBildaPinpointDriver pinpoint;
+    Pose2D currentPose;
+    DoubleSupplier xPosSupplier, yPosSupplier, rotPosSupplier;
+    double prevX, prevY, prevRot;
+    double xOffset = 6.5, yOffset = -2.25;
+    double ticksPerInch = 1;
 
-    public OdometrySubsystem(Telemetry telemetry, HardwareMap hardwareMap) {
+    public OdometrySubsystem(Telemetry telemetry, Limelight3A limelight, DcMotorEx xPosMotor, DcMotorEx yPosMotor, IMU imu) {
         this.telemetry = telemetry;
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        this.limelight = limelight;
 
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        this.xPosMotor = xPosMotor;
+        this.yPosMotor = yPosMotor;
 
-        pinpoint.setOffsets(6.5, -2.25, DistanceUnit.INCH);
-        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
-                GoBildaPinpointDriver.EncoderDirection.FORWARD);
-        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        this.xPosSupplier = xPosMotor::getCurrentPosition;
+        this.yPosSupplier = yPosMotor::getCurrentPosition;
+
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+
+        // Now initialize the IMU with this mounting orientation
+        // Note: if you choose two conflicting directions, this initialization will cause a code exception.
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+
+        rotPosSupplier = () -> imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
         telemetry.setMsTransmissionInterval(11);
 
@@ -39,18 +60,40 @@ public class OdometrySubsystem {
     }
 
     public Pose2D getRobotPose() {
-        return getPinpointPose();
+        return currentPose;
     }
 
     ////////////////////// Pinpoint Methods //////////////////////
 
     public void updateOdometry() {
         Pose2D visionPose = getCombinedPose();
-        pinpoint.update();
+        updateDeadwheels();
 
         if (visionPose != null) {
             seedVisionPose(visionPose);
         }
+    }
+
+    private void updateDeadwheels() {
+        double xPodDistance = xPosSupplier.getAsDouble() - prevX;
+        double yPodDistance = yPosSupplier.getAsDouble() - prevY;
+
+        xPodDistance /= ticksPerInch;
+        yPodDistance /= ticksPerInch;
+
+        double rotDistance = rotPosSupplier.getAsDouble() - prevRot;
+
+        xPodDistance -= rotDistance * xOffset;
+        yPodDistance -= rotDistance * yOffset;
+
+        double newRot = AngleUnit.RADIANS.normalize(rotPosSupplier.getAsDouble() + currentPose.getHeading(AngleUnit.RADIANS));
+        double newX = (xPodDistance * Math.cos(newRot)) - (yPodDistance * Math.sin(newRot));
+        double newY = (xPodDistance * Math.sin(newRot)) + (yPodDistance * Math.cos(newRot));
+
+        currentPose = new Pose2D(DistanceUnit.INCH, newX, newY, AngleUnit.RADIANS, newRot);
+        prevX = xPosSupplier.getAsDouble();
+        prevY = yPosSupplier.getAsDouble();
+        prevRot = rotPosSupplier.getAsDouble();
     }
 
     public void seedPose(double x, double y, double degrees) {
@@ -58,7 +101,7 @@ public class OdometrySubsystem {
     }
 
     public void seedPose(Pose2D newPose) {
-        pinpoint.setPosition(newPose);
+        currentPose = newPose;
     }
 
     public void seedVisionPose(Pose2D newPose) {
@@ -69,11 +112,6 @@ public class OdometrySubsystem {
                 AngleUnit.DEGREES,
                 (((getRobotPose().getHeading(AngleUnit.DEGREES) * 4) + newPose.getHeading(AngleUnit.DEGREES)) / 25)
                 );
-        pinpoint.setPosition(averagedPose);
-    }
-
-    private Pose2D getPinpointPose() {
-        return pinpoint.getPosition();
     }
 
     ////////////////////// Limelight Methods /////////////////////
@@ -97,14 +135,14 @@ public class OdometrySubsystem {
     }
 
     private Pose2D getMegaTag2Pose() {
-        limelight.updateRobotOrientation(getPinpointPose().getHeading(AngleUnit.DEGREES));
+        limelight.updateRobotOrientation(getRobotPose().getHeading(AngleUnit.DEGREES));
         LLResult result = limelight.getLatestResult();
         if (result != null) {
             if (result.isValid()) {
                 Pose3D botpose = result.getBotpose_MT2();
                 return new Pose2D(
                         DistanceUnit.METER, botpose.getPosition().x, botpose.getPosition().y,
-                        AngleUnit.DEGREES, getPinpointPose().getHeading(AngleUnit.DEGREES)
+                        AngleUnit.DEGREES, getRobotPose().getHeading(AngleUnit.DEGREES)
                 );
             }
         }

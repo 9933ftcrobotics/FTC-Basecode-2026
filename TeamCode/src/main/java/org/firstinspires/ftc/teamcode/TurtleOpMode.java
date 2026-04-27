@@ -17,7 +17,6 @@ public class TurtleOpMode extends OpMode {
 
     DriveSubsystem drive;
     IntakeSubSystem intake;
-    OdometrySubsystem odometry;
     ShooterSubSystem shooter;
     DeliverySubSystem delivery;
     int tresStep = 10;
@@ -26,8 +25,7 @@ public class TurtleOpMode extends OpMode {
     public void init() {
 
         intake = new IntakeSubSystem(telemetry,hardwareMap);
-        odometry = new OdometrySubsystem(telemetry,hardwareMap);
-        drive = new DriveSubsystem(telemetry, hardwareMap, odometry);
+        drive = new DriveSubsystem(telemetry, hardwareMap);
         shooter = new ShooterSubSystem(telemetry,hardwareMap);
         delivery = new DeliverySubSystem(telemetry,hardwareMap);
     }
@@ -35,8 +33,8 @@ public class TurtleOpMode extends OpMode {
     @Override
     public void loop() {
 
-        odometry.updateOdometry();
-        telemetry.addLine("Robot Pose:"+ odometry.getRobotPose().getX(DistanceUnit.INCH) + "," + odometry.getRobotPose().getY(DistanceUnit.INCH) + "," + odometry.getRobotPose().getHeading(AngleUnit.DEGREES));
+        drive.updateOdometry();
+        telemetry.addLine("Robot Pose:"+ drive.getRobotPose().getX(DistanceUnit.INCH) + "," + drive.getRobotPose().getY(DistanceUnit.INCH) + "," + drive.getRobotPose().getHeading(AngleUnit.DEGREES));
 
     }
     public boolean shootTres() {
@@ -86,7 +84,7 @@ public class TurtleOpMode extends OpMode {
 
     @Override
     public void stop() {
-        odometry.endStream();
+        drive.endStream();
     }
 
 }

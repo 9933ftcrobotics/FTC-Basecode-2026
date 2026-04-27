@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.rev.Rev9AxisImu;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -12,10 +15,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.TurtleOpMode;
 
-public class DriveSubsystem {
+public class DriveSubsystem extends OdometrySubsystem{
     Telemetry telemetry;
     DcMotorEx leftFront, rightFront, leftRear, rightRear;
-    OdometrySubsystem odometry;
     boolean isRobotAtTarget = false;
 
     /**
@@ -23,12 +25,18 @@ public class DriveSubsystem {
      * </p>
      * Assumes Pinpoint is configured as pinpoint
      */
-    public DriveSubsystem(Telemetry telemetry, HardwareMap hardwareMap, OdometrySubsystem odometry) {
+    public DriveSubsystem(Telemetry telemetry, HardwareMap hardwareMap) {
+        super(
+                telemetry,
+                hardwareMap.get(Limelight3A.class, "limelight"),
+                hardwareMap.get(DcMotorEx.class, "leftFront"),
+                hardwareMap.get(DcMotorEx.class, "rightFront"),
+                hardwareMap.get(IMU.class, "imu")
+        );
         this.telemetry = telemetry;
-        this.odometry = odometry;
 
-        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        leftFront = xPosMotor;
+        rightFront = yPosMotor;
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
 
@@ -41,12 +49,13 @@ public class DriveSubsystem {
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
         rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        
     }
 
 
     public void driveToPose (double x, double y, double a) {
         Pose2D targetPose = new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, a),
-                currentPose = odometry.getRobotPose();
+                currentPose = getRobotPose();
 
         //Figure out the distance away from end pose
         double distanceAwayX = targetPose.getX(DistanceUnit.INCH) - currentPose.getX(DistanceUnit.INCH);
@@ -110,7 +119,7 @@ public class DriveSubsystem {
 
         // Second, rotate angle by the angle the robot is pointing
         theta = AngleUnit.normalizeRadians(theta -
-                odometry.getRobotPose().getHeading(AngleUnit.RADIANS));
+                getRobotPose().getHeading(AngleUnit.RADIANS));
 
         // Third, convert back to cartesian
         double newForward = r * Math.sin(theta);
