@@ -105,7 +105,7 @@ public class OdometrySubsystem {
     }
 
     public void seedVisionPose(Pose2D newPose) {
-        Pose2D averagedPose = new Pose2D(
+        currentPose = new Pose2D(
                 DistanceUnit.INCH,
                 (((getRobotPose().getX(DistanceUnit.INCH) * 4) + newPose.getX(DistanceUnit.INCH)) / 5),
                 (((getRobotPose().getY(DistanceUnit.INCH) * 4) + newPose.getY(DistanceUnit.INCH)) / 5),
