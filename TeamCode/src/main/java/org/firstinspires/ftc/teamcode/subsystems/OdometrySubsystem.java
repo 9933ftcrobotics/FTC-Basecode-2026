@@ -105,13 +105,13 @@ public class OdometrySubsystem {
     }
 
     public void seedVisionPose(Pose2D newPose) {
-        currentPose = new Pose2D(
+        seedPose(new Pose2D(
                 DistanceUnit.INCH,
                 (((getRobotPose().getX(DistanceUnit.INCH) * 4) + newPose.getX(DistanceUnit.INCH)) / 5),
                 (((getRobotPose().getY(DistanceUnit.INCH) * 4) + newPose.getY(DistanceUnit.INCH)) / 5),
                 AngleUnit.DEGREES,
                 (((getRobotPose().getHeading(AngleUnit.DEGREES) * 4) + newPose.getHeading(AngleUnit.DEGREES)) / 25)
-                );
+        ));
     }
 
     ////////////////////// Limelight Methods /////////////////////
