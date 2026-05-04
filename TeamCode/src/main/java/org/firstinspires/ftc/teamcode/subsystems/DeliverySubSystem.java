@@ -17,7 +17,7 @@ public class DeliverySubSystem {
 
 }
         public void beltMove(double speed) {
-            deliveryMotor.setVelocity(speed)
+            deliveryMotor.setVelocity(speed);
 
         }
 

@@ -26,6 +26,9 @@ public class BasicTeleOp extends TurtleOpMode {
         }
         else{
             shooter.stop();
+            if (gamepad1.left_trigger>.25) {
+                delivery.beltMove(100);
+            }
         }
         if(gamepad1.start){
             drive.seedPose(0,0,0);
