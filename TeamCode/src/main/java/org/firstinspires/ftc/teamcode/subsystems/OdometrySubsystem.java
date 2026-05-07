@@ -49,7 +49,7 @@ public class OdometrySubsystem {
         pinpoint.update();
 
         if (visionPose != null) {
-            seedVisionPose(visionPose);
+            //seedVisionPose(visionPose);
         }
     }
 

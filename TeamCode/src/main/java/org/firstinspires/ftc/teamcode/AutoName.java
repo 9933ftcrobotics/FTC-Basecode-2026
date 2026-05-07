@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public class AutoName extends TurtleOpMode {
 
     int step = 0;
-    boolean literallyAnything;
+    boolean literallyAnything, literallyAnything2;
     @Override
     public void init() {
 
@@ -22,17 +22,16 @@ public class AutoName extends TurtleOpMode {
         super.loop();
         telemetry.addLine("Step: " + step);
         if (step == 0) {
-            drive.seedPose(0, 0, 0);
+            odometry.seedPose(0, 0, 0);
             step = 10;
         }
         else if (step == 10) {
-            drive.driveToPose(66, 7, -34);
+            drive.driveToPose(66, 5, -34);
             if (drive.isRobotAtTarget()) {
                 step = 20;
             }
         }
         else if (step == 20) {
-            shootTres();
             literallyAnything = shootTres();
             if (literallyAnything) {
                 step = 30;
@@ -54,13 +53,15 @@ public class AutoName extends TurtleOpMode {
                 step = 60;}
         }
         else if (step == 60) {
-            drive.driveToPose(70, 6, -40);
+            drive.driveToPose(70, -9, -40);
             if (drive.isRobotAtTarget()) {
                 step = 70;}
         }
         else if (step == 70) {
-            shootTres();
-            step = 80;
+            literallyAnything2 = shootTres();
+            if (literallyAnything2) {
+                step = 80;
+            }
         }
 
         }
