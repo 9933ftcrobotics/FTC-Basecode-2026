@@ -22,6 +22,8 @@ public class DriveSubsystem {
     PIDController translationalController = new PIDController(TurtleOpMode.p, TurtleOpMode.i, TurtleOpMode.d);
     PIDController rotationalController = new PIDController(.05, 0, 0);
 
+    Pose2D targetPose = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
+
     /**
      * Assumes Drive Motors are configured as leftFront, rightFront, leftRear, and rightRear
      * </p>
@@ -53,20 +55,26 @@ public class DriveSubsystem {
                 GoBildaPinpointDriver.EncoderDirection.FORWARD);
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
 
+        targetPose = getRobotPose();
     }
 
     public void updateOdometry() {
         pinpoint.update();
     }
 
-
+    public void setTargetPose(double x, double y, double a) {
+        if (targetPose.getX(DistanceUnit.INCH) != x || targetPose.getY(DistanceUnit.INCH) != y || targetPose.getHeading(AngleUnit.DEGREES) != a) {
+            targetPose = new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, a);
+            isRobotAtTarget = false;
+        }
+    }
 
     public void seedPose(double x, double y, double degrees) {
         pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, degrees));
     }
 
-    public void driveToPose (double x, double y, double a) {
-        Pose2D targetPose = new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, a), currentPose = pinpoint.getPosition();
+    public void driveToPose () {
+        Pose2D currentPose = pinpoint.getPosition();
 
         //Figure out the distance away from end pose
         double distanceAwayX = targetPose.getX(DistanceUnit.INCH) - currentPose.getX(DistanceUnit.INCH);
@@ -91,7 +99,7 @@ public class DriveSubsystem {
         }
 
         //Power needed in each direction
-        double rotPow = -rotationalController.calculate(currentAngle, targetAngle);
+        double rotPow = rotationalController.calculate(currentAngle, targetAngle);
         double xPow = translationOutput * Math.cos(angleOfDistance);
         double yPow = -translationOutput * Math.sin(angleOfDistance);
 
@@ -145,7 +153,7 @@ public class DriveSubsystem {
         double maxSpeed = 1.0;  // make this slower for outreaches
 
         // This is needed to make sure we don't pass > 1.0 to any wheel
-        // It allows us to keep all of the motors in proportion to what they should
+        // It allows us to keep all the motors in proportion to what they should
         // be and not get clipped
         maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
         maxPower = Math.max(maxPower, Math.abs(frontRightPower));

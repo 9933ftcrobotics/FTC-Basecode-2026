@@ -29,27 +29,26 @@ public class BlueClose extends TurtleOpMode {
                 break;
             case 10:
 
-                intake.start();
-                setTargetPose(12, 0, 0);
+                drive.setTargetPose(36, 0, 0);
                 if (drive.isRobotAtTarget()) {
                     step = 20;
                 }
                 break;
             case 20:
-                setTargetPose(12, 12, 0);
+                drive.setTargetPose(36, 36, 0);
                 if (drive.isRobotAtTarget()) {
                     step = 30;
                 }
                 break;
             case 30:
-                setTargetPose(0, 12, 0);
+                drive.setTargetPose(0, 36, 0);
                 if (drive.isRobotAtTarget()) {
                     step = 40;
                 }
                 intake.stop();
                 break;
             case 40:
-                setTargetPose(0, 0, 0);
+                drive.setTargetPose(0, 0, 0);
                 if (drive.isRobotAtTarget()) {
                     step = 50;
                 }

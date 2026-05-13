@@ -18,7 +18,6 @@ public class TurtleOpMode extends OpMode {
 
 
     boolean auto; // Know if we need to run DriveToPose
-    double x, y, heading; // Poses for auto
     public static double p = 0.15, i = 0, d = 0.05; // PID for drivetrain
     public static double maxSpeed; // Max speed for auto
 
@@ -34,18 +33,12 @@ public class TurtleOpMode extends OpMode {
     public void loop() {
         // Only DriveToPose when in auto
         if (auto) {
-            drive.driveToPose(x, y, heading);
+            drive.driveToPose();
         }
 
         drive.updateOdometry();
-        telemetry.addLine("Robot Pose:"+ drive.getRobotPose().getX(DistanceUnit.INCH) + "," + drive.getRobotPose().getY(DistanceUnit.INCH) + "," + drive.getRobotPose().getHeading(AngleUnit.DEGREES));
-
-    }
-
-    public void setTargetPose(double x, double y, double heading) {
-        this.x = x;
-        this.y = y;
-        this.heading = heading;
+        telemetry.addLine("Robot Pose:"+ Math.round(drive.getRobotPose().getX(DistanceUnit.INCH)) + "," + Math.round(drive.getRobotPose().getY(DistanceUnit.INCH)) + "," + Math.round(drive.getRobotPose().getHeading(AngleUnit.DEGREES)));
+        telemetry.addLine("Is Robot At Target:" + drive.isRobotAtTarget());
     }
 
 
