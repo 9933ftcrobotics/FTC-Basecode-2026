@@ -31,14 +31,26 @@ public class blueclUHose extends TurtleOpMode {
             case 4:
                 drive.setTargetPose(0, 0, 0);
                 if (drive.isRobotAtTarget()) {
-                    step = 10;
+                    timer.reset();
+                    step = 20;
                 }
                 break;
             case 10:
 
                 drive.setTargetPose(36, 0, 0);
                 if (drive.isRobotAtTarget()) {
+                    timer.reset();
+                    step = 15;
+                }
+                break;
+            case 15:
+                if(timer.seconds() > 0.5) {
                     step = 4;
+                }
+                break;
+            case 20:
+                if(timer.seconds() > 1.0) {
+                    step = 10;
                 }
                 break;
 

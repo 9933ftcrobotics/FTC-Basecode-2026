@@ -74,6 +74,11 @@ public class DriveSubsystem {
     }
 
     public void driveToPose () {
+
+        translationalController.setP(TurtleOpMode.p);
+        translationalController.setI(TurtleOpMode.i);
+        translationalController.setD(TurtleOpMode.d);
+
         Pose2D currentPose = pinpoint.getPosition();
 
         //Figure out the distance away from end pose
